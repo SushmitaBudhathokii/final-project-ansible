@@ -1,0 +1,15 @@
+name: On Prod Merge
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  say-done:
+    name: Print Done on Prod Merge
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Say Done
+        run: echo "Done"
