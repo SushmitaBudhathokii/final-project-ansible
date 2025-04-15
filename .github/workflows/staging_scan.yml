@@ -1,4 +1,4 @@
-name: Lint Ansible Code
+name: Lint and Run Ansible Playbook
 
 on:
   push:
@@ -11,8 +11,8 @@ on:
       - prod
 
 jobs:
-  ansible-lint:
-    name: Run Ansible Linter
+  ansible:
+    name: Lint and Execute Ansible
     runs-on: ubuntu-latest
 
     steps:
@@ -24,11 +24,28 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install ansible and ansible-lint
+      - name: Install Ansible and Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ansible ansible-lint
+          pip install ansible ansible-lint boto3 botocore
+          ansible-galaxy collection install amazon.aws
 
       - name: Run ansible-lint
         run: |
           ansible-lint .
+
+      - name: Set up AWS Credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: |
+          echo "AWS credentials configured."
+
+      - name: Run Ansible Playbook
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: |
+          ansible-playbook -i aws_ec2.yaml playbook.yaml
