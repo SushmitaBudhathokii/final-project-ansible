@@ -65,4 +65,5 @@ jobs:
           AWS_REGION: us-east-1
         run: |
           export AWS_REGION=us-east-1
+          ansible-inventory -i aws_ec2.yaml --list
           ansible-playbook playbook.yaml
