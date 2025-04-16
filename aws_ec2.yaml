@@ -1,13 +1,11 @@
+---
 plugin: aws_ec2
 regions:
-  - us-east-1
-filters:
-  tag:Role:
-    - WebServer
+  - us-east-1  
 keyed_groups:
   - key: tags.Role
     prefix: tag
-hostnames:
-  - private-ip-address
+filters:
+  instance-state-name: running
 compose:
-  ansible_host: private_ip_address
+  ansible_host: private_ip_address  
