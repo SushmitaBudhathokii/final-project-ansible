@@ -4,7 +4,7 @@
   become: true
   gather_facts: yes  
   vars:
-    ansible_ssh_common_args: "-o ProxyCommand='ssh -i ~/.ssh/acs730-final-proj -W %h:%p ec2-user@34.192.84.208'"
+    ansible_ssh_common_args: "-o ProxyCommand='ssh -i ~/.ssh/acs730-final-proj -W %h:%p ec2-user@10.1.2.88'"
   tasks:
     - name: Install HTTPD
       yum:
