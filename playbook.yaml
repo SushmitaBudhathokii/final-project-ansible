@@ -1,6 +1,6 @@
 ---
 - name: Install Apache HTTPD on EC2 instances and deploy static webpage
-  hosts: tag_WebServer
+  hosts: WebServer
   become: true
   gather_facts: yes  
   vars:
