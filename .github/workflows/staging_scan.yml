@@ -45,7 +45,7 @@ jobs:
       - name: Set up SSH Private Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.RIVATE_KEY }}" > ~/.ssh/acs730-final-proj
+          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/acs730-final-proj
           chmod 600 ~/.ssh/acs730-final-proj
         shell: bash
 
