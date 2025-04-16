@@ -2,13 +2,9 @@ name: Lint and Run Ansible Playbook
 
 on:
   push:
-    branches:
-      - staging
-      - prod
+    branches: [staging, prod]
   pull_request:
-    branches:
-      - staging
-      - prod
+    branches: [staging, prod]
 
 jobs:
   ansible:
@@ -31,16 +27,7 @@ jobs:
           ansible-galaxy collection install amazon.aws
 
       - name: Run ansible-lint
-        run: |
-          ansible-lint .
-
-      - name: Set up AWS Credentials
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
-        run: |
-          echo "AWS credentials configured."
+        run: ansible-lint .
 
       - name: Set up SSH Private Key
         run: |
@@ -49,15 +36,23 @@ jobs:
           chmod 600 ~/.ssh/acs730-final-proj
         shell: bash
 
-      # - name: Configure Ansible
-      #   run: |
-      #     cat <<EOF > ansible.cfg
-      #     [defaults]
-      #     inventory = ./aws_ec2.yaml
-      #     remote_user = ec2-user
-      #     private_key_file = ~/.ssh/acs730-final-proj
-      #     host_key_checking = False
-      #     EOF
+      - name: Configure Ansible
+        run: |
+          cat > ansible.cfg <<EOF
+          [defaults]
+          inventory = ./aws_ec2.yaml
+          remote_user = ec2-user
+          private_key_file = ~/.ssh/acs730-final-proj
+          host_key_checking = False
+          EOF
+
+      # Optional: Debug dynamic inventory
+      - name: Debug EC2 Inventory
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: ansible-inventory -i aws_ec2.yaml --list
 
       - name: Run Ansible Playbook
         env:
@@ -66,5 +61,4 @@ jobs:
           AWS_REGION: us-east-1
         run: |
           export AWS_REGION=us-east-1
-          ansible-playbook -i hosts.txt playbook.yaml
-
+          ansible-playbook playbook.yaml
