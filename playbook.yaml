@@ -1,0 +1,63 @@
+---
+- name: Install Apache HTTPD on EC2 instances and deploy static webpage
+  hosts: tag_WebServer
+  become: true
+  gather_facts: yes  
+  vars:
+    ansible_ssh_common_args: "-o ProxyCommand='ssh -i /home/ec2-user/environment/final-project-terraform/webserver/acs730-final-proj -W %h:%p ec2-user@{{ hostvars[groups['tag_Bastion_WebServer'][0]].public_ip_address }}'"
+  tasks:
+    - name: Install HTTPD
+      yum:
+        name: httpd
+        state: present
+
+    - name: Create a static HTML file with IP address
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <title>My Static Webpage</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    margin: 40px;
+                    background-color: #f9f9f9;
+                    text-align: center;
+                  }
+                  img {
+                    max-width: 100%;
+                    height: auto;
+                    margin-top: 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                  }
+                  h1 {
+                    color: #333;
+                  }
+                  p {
+                    color: #555;
+                    font-size: 1.1em;
+                  }
+                </style>
+              </head>
+              <body>
+                <h1>Welcome to My Static Webpage!</h1>
+                <p>This is a static webpage served by Apache HTTPD on EC2.<br>This is a group project by <strong>Ven</strong> and <strong>Sushmita</strong>.</p>
+                <p><strong>Server Public IP:</strong> {{ ansible_host }}</p>
+              
+                <img src="https://final-project-acs-s3.s3.us-east-1.amazonaws.com/march-11-2025-wide.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAWBHSX3OWMJBK6S46%2F20250416%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250416T055648Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELb%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQDrqd0IRu5rf07WAJrHOIK49vlN4uX92scu4HdBmnh1OgIhAOevJZzVwTKgSD8nfc9C6HiMnIsS1wRCPIslXZ2Y86jEKvgCCD8QARoMNDE0OTczNDE4NDEyIgwyBEo7t6%2B2jDIGjmAq1QLDmNPYTJWWw1LorkeJwmczNRomMcZRbVOWHUbrZMpFfx8A8TW2KXf87eVbNFOjfrBfSoMJ9YE3W2i3BeroTbMHRWa7VKw1mmrXx3J67DIgORSTupnynDvvyoP4m4MOoroHWbEjIRuc43M%2FozoUpNVE9jXnSq2l%2BwW5w0hpodzAYLJyuTfHXdePinJcjbvPXIcC9JcPmaxCtEPeofCsxWT6tCVEkTp%2B1jeVWpevpmIJMODHHAHyatP1F0PL8Q6SKSikhXEk8IQx%2Fho8L9WCe%2F5%2B7yIBu1fUAsSjVus8e3rDyCQktdxsruTStO%2BLlLcBfwCGEGTKjN2QV1d%2FpwTGCnG0GTeA6y%2FrlthaYMhzCgCP5ZBzZl9PDm%2BVoAYGRW6UMS3%2B6d%2BidX2XBdzkqOrT3oCczM1z43WTX%2FUF0sIAezVaTuiSMkau1ibWS%2BlEHDfpwtoUMNrB1zDYqPy%2FBjqGApTUtPkc8ui1sWa9lB51mMvovaMyvSvrIthDbEGUQdQqSbKPRkBLuWHZkjOYxlIG2Fq%2FkOwyRHjyKJ0AAC8OKBk29NGgXAH8UZlIi2%2F7CsL6yxsqtqsNcHZCDDCsmYWl5e4T5mfft5K9Qed68B4%2BzL1pFwDf%2BGq9RxEY7tIDa4NMbEEfFvY%2F4aLjBnmUlQ4%2BkEdUsvpXEpvnCQNvnfyQJEn6C18CP27%2B8WyI644cHYf7oTWrUTHcy2PskdyIRAslvLmRZcj%2B9RVPlLQ%2FssJsEOhbVvgdfv2WSGEc1w0SeR%2Bgo7ymmBs1srdhraeVcHmL4SEQs4wRmPOWsZpf6DLz2Po1OY7eDTQ%3D&X-Amz-Signature=9cc6ca39ec5d8e2a2c36206d208280910a3418b3c619818c35db52134d43cef4&X-Amz-SignedHeaders=host&response-content-disposition=inline" alt="Project Banner">
+              </body>
+              </html>
+
+        owner: apache
+        group: apache
+        mode: '0644'
+
+    - name: Start and enable HTTPD
+      systemd:
+        name: httpd
+        state: started
+        enabled: true
