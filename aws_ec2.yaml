@@ -5,7 +5,7 @@ filters:
   tag:Name:
     - WebServer
 keyed_groups:
-  - key: tags.Name
+  - key: tags.Role
     prefix: tag
 hostnames:
   - private-ip-address
