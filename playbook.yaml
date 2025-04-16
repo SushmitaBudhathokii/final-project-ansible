@@ -4,7 +4,7 @@
   become: true
   gather_facts: yes  
   vars:
-    ansible_ssh_common_args: "-o ProxyCommand='ssh -i ~/.ssh/acs730-final-proj -W %h:%p ec2-user@10.1.2.88'"
+    ansible_ssh_common_args: "-o ProxyCommand='ssh -i /home/ec2-user/environment/final-project-terraform/webserver/acs730-final-proj -W %h:%p ec2-user@{{ hostvars[groups['tag_Bastion_WebServer'][0]].public_ip_address }}'"
   tasks:
     - name: Install HTTPD
       yum:
