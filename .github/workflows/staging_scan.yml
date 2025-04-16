@@ -64,4 +64,4 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           export AWS_REGION=us-east-1
           ansible-inventory -i ./aws_ec2.yaml --list
-          ansible-playbook playbook.yaml
+          ansible-playbook ./playbook.yaml
